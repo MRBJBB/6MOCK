@@ -1,0 +1,51 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;hm;inl;inc;xsd</Extensions>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="Source Files\Minmax">
+      <UniqueIdentifier>{586917e8-fc99-4615-b0ec-77d84f558e4f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Player">
+      <UniqueIdentifier>{c08c459b-0629-4df2-9a67-e80e09fbb99b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Platform">
+      <UniqueIdentifier>{5d782d1b-13c3-481f-9075-b280f6d3587d}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Minmax\minmax_node.h">
+      <Filter>Source Files\Minmax</Filter>
+    </ClInclude>
+    <ClInclude Include="Minmax\minmax_tree.h">
+      <Filter>Source Files\Minmax</Filter>
+    </ClInclude>
+    <ClInclude Include="Platform\api.h">
+      <Filter>Source Files\Platform</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="Minmax\minmax_tree.cpp">
+      <Filter>Source Files\Minmax</Filter>
+    </ClCompile>
+    <ClCompile Include="Platform\api.cpp">
+      <Filter>Source Files\Platform</Filter>
+    </ClCompile>
+    <ClCompile Include="Player\player.cpp">
+      <Filter>Source Files\Player</Filter>
+    </ClCompile>
+    <ClCompile Include="main.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+</Project>
