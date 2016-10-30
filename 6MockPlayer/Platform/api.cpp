@@ -13,7 +13,7 @@ int PlayerMoveCnt;
 int OpponentMoveCnt;
 
 void initBoard() {
-	memset(GameBoard, 0, sizeof(GameBoard));
+	memset(GameBoard, Blank, sizeof(GameBoard));
 }
 
 void domymove(int x[], int y[], int cnt) {

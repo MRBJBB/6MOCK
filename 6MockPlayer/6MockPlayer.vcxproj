@@ -22,12 +22,14 @@
     <ClInclude Include="Minmax\minmax_node.h" />
     <ClInclude Include="Minmax\minmax_tree.h" />
     <ClInclude Include="Platform\api.h" />
+    <ClInclude Include="Player\score.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Minmax\minmax_tree.cpp" />
     <ClCompile Include="Platform\api.cpp" />
     <ClCompile Include="Player\player.cpp" />
+    <ClCompile Include="Player\score.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{35A01925-56E3-472A-A095-945309E21C3E}</ProjectGuid>

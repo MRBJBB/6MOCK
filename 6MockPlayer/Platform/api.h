@@ -1,8 +1,8 @@
 #pragma once
 #include <windows.h>
 
-
 #define BOARD_SIZE 19
+#define BOARD_CENTER 9
 
 enum Stone {
 	Blank = 0,
