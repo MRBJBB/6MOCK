@@ -4,6 +4,10 @@
 
 using namespace std;
 
+#define MYSTONE 1
+#define OPPSTONE 2
+#define POSITIVE_INF 0X7FFFFFFF
+#define NEGATIVE_INF 0X80000001
 
 typedef struct {
 	int y;
@@ -13,16 +17,10 @@ typedef struct {
 
 typedef struct _MinmaxNode {
 	char isMaxnode;				// 1: Min node , 0: Max node
-	int weight;					// Node의 가중치 
+	int val_alpha;
+	int val_beta;
 	list<void*> child;			// 자식노드		
 	_MinmaxNode* patent;		// 부모노드
 	Point selec_Point[2];
 
 }MinmaxNode;
-
-typedef struct _MinmaxLeafNode {
-	char LeafBoard[BOARD_SIZE][BOARD_SIZE];		// Node의 보드 상태
-	char isMaxnode;								// 0: Min node , 1: Max node
-	int weight;									// Node의 가중치 
-	MinmaxNode* patent;						// 부모노드
-}MinmaxLeafNode;
