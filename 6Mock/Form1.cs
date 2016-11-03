@@ -27,8 +27,20 @@ namespace _6Mock
 
         private bool turn = false;// false : 흑돌 , true : 백돌
 
+
+
         enum STONE { none, Black, White, Block };
         STONE[,] 바둑판 = new STONE[19, 19];
+
+        private int[] 블록킹x = new int[7];
+        private int[] 블록킹y = new int[7];
+        private int 블록킹수;
+        private int 선;
+        private int[] AIx = new int[2];
+        private int[] AIy = new int[2];
+        private int[] HumanX = new int[2];
+        private int[] HumanY = new int[2];
+        private int turn_num;
 
         public Form1()
         {
@@ -39,6 +51,31 @@ namespace _6Mock
             panel1.Enabled = false;
             BlackStonePanel = new Bitmap(BlackStone, this.pictureBox1.Size);
             WhiteStonePanel = new Bitmap(WhiteStone, this.pictureBox1.Size);
+        }
+
+        private void 랜덤생성()
+        {
+            Random rand = new Random();
+            선 = rand.Next(2);
+            블록킹수 = rand.Next(7); // 0~ 6;
+
+            if (선 == 1) MessageBox.Show("AI First");
+            else MessageBox.Show("You First");
+
+            for (int i = 0; i <= 블록킹수; i++)
+            {
+                블록킹x[i] = rand.Next(19);
+                블록킹y[i] = rand.Next(19);
+
+                for (int j = 0; j < i; j++)
+                {
+                    if (블록킹x[i] == 블록킹x[j] && 블록킹y[i] == 블록킹y[j])
+                    {
+                        i--;
+                        break;
+                    }
+                }
+            }
         }
 
         protected override void OnPaint(PaintEventArgs e)
@@ -70,10 +107,10 @@ namespace _6Mock
 
         private void draw화점(Graphics g)
         {
-            for(int x=3; x<=15; x+=6)
-                for(int y = 3; y<=15; y+=6)
+            for (int x = 3; x <= 15; x += 6)
+                for (int y = 3; y <= 15; y += 6)
                 {
-                    Rectangle r = new Rectangle(10+ 눈size * x - 화점size / 2, 10 + 눈size * y - 화점size / 2, 화점size, 화점size);
+                    Rectangle r = new Rectangle(10 + 눈size * x - 화점size / 2, 10 + 눈size * y - 화점size / 2, 화점size, 화점size);
                     g.FillEllipse(bBrush, r);
                 }
         }
@@ -94,12 +131,32 @@ namespace _6Mock
                 //g.FillEllipse(bBrush, r);
                 g.DrawImage(BlackStone, r);
                 바둑판[x, y] = STONE.Black;
+                if (선 == 1)
+                {
+                    AIx[turn_cnt] = x;
+                    AIy[turn_cnt] = y;
+                }
+                else
+                {
+                    HumanX[turn_cnt] = x;
+                    HumanY[turn_cnt] = y;
+                }
             }
             else  // 흰돌
             {
                 //g.FillEllipse(wBrush, r);
                 g.DrawImage(WhiteStone, r);
                 바둑판[x, y] = STONE.White;
+                if (선 == 0)
+                {
+                    AIx[turn_cnt] = x;
+                    AIy[turn_cnt] = y;
+                }
+                else
+                {
+                    HumanX[turn_cnt] = x;
+                    HumanY[turn_cnt] = y;
+                }
             }
             turn_cnt++;
             this.label2.Text = (2 - turn_cnt).ToString();
@@ -109,6 +166,40 @@ namespace _6Mock
                 if (!turn) this.pictureBox1.Image = BlackStonePanel;
                 else this.pictureBox1.Image = WhiteStonePanel;
                 turn_cnt = 0;
+
+                if (turn_num != 1)
+                {
+                    if ((선 == 1 && turn_num % 2 == 0) || (선 == 0 && turn_num % 2 == 1))
+                    {
+                        updateStones(HumanX, HumanY, 2);
+                        turn_num++;
+                        playerTurn(AIx, AIy, 2);
+                        draw돌(AIx[0], AIy[0]);
+                        draw돌(AIx[1], AIy[1]);
+                    }
+                    else
+                    {
+                        turn_num++;
+                    }
+
+                }
+                else if (turn_num == 1 && 선 == 0)
+                {
+                    int[] startX = new int[2];
+                    startX[0] = HumanX[1];
+                    int[] startY = new int[2];
+                    startY[0] = HumanY[1];
+                    updateStones(startX, startY, 1);
+                    turn_num++;
+                    playerTurn(AIx, AIy, 2);
+                    draw돌(AIx[0], AIy[0]);
+                    draw돌(AIx[1], AIy[1]);
+                    //turn_num++;
+                }
+                else if (turn_num == 1 && 선 == 1)
+                {
+                    turn_num++;
+                }
             }
             check6mok(x, y);  // 육목이 만들어졌는지 체크하는 함수
         }
@@ -157,12 +248,12 @@ namespace _6Mock
         {
             int cnt = 1;
             for (int i = 1; i < 6; i++)
-                if (y + i <= 18 && 바둑판[x, y+i] == 바둑판[x, y])
+                if (y + i <= 18 && 바둑판[x, y + i] == 바둑판[x, y])
                     cnt++;
                 else
                     break;
             for (int i = 1; i < 6; i++)
-                if (y - i >= 0 && 바둑판[x, y-i] == 바둑판[x, y])
+                if (y - i >= 0 && 바둑판[x, y - i] == 바둑판[x, y])
                     cnt++;
                 else
                     break;
@@ -173,12 +264,12 @@ namespace _6Mock
         {
             int cnt = 1;
             for (int i = 1; i < 6; i++)
-                if (x + i <= 18 && y-i >=0 && 바둑판[x + i, y-i] == 바둑판[x, y])
+                if (x + i <= 18 && y - i >= 0 && 바둑판[x + i, y - i] == 바둑판[x, y])
                     cnt++;
                 else
                     break;
             for (int i = 1; i < 6; i++)
-                if (x - i >= 0 && y+i <=18 && 바둑판[x - i, y+i] == 바둑판[x, y])
+                if (x - i >= 0 && y + i <= 18 && 바둑판[x - i, y + i] == 바둑판[x, y])
                     cnt++;
                 else
                     break;
@@ -189,6 +280,7 @@ namespace _6Mock
         {
             panel1.Enabled = true;
             turn_cnt = 1;
+            turn_num = 1;
             this.pictureBox1.Image = BlackStonePanel;
             for (int x = 0; x < 19; x++)
                 for (int y = 0; y < 19; y++)
@@ -199,6 +291,29 @@ namespace _6Mock
             this.label2.Text = (2 - turn_cnt).ToString();
 
             initBoard();
+            랜덤생성();
+            setBlocks(블록킹x, 블록킹y, 블록킹수);
+            if (선 == 1)
+            {
+                playerTurn(AIx, AIy, 1);
+                draw돌(AIx[0], AIy[0]);
+
+                //playerTurn()
+            }
+            /*    else
+                {
+                    bool thisTurn = turn;
+                    //while (thisTurn == turn) ;
+                    int[] startX = new int[2];
+                    startX[0] = HumanX[1];
+                    int[] startY = new int[2];
+                    startY[0] = HumanY[1];
+                    updateStones(startX, startY, 1);
+
+                    playerTurn(AIx, AIy, 2);
+                    draw돌(AIx[0], AIy[0]);
+                    draw돌(AIx[1], AIy[1]);
+                }*/
         }
 
         private void 종료XToolStripMenuItem_Click(object sender, EventArgs e)
@@ -215,19 +330,20 @@ namespace _6Mock
                 else
                     break;
             for (int i = 1; i < 6; i++)
-                if (x - i >= 0 && y - i >=0  && 바둑판[x - i, y - i] == 바둑판[x, y])
+                if (x - i >= 0 && y - i >= 0 && 바둑판[x - i, y - i] == 바둑판[x, y])
                     cnt++;
                 else
                     break;
             return cnt;
         }
-        [DllImport("6MockPlayer.dll")]
+
+        [DllImport("6MockPlayer.dll", CallingConvention = CallingConvention.Cdecl)]
         extern public static void initBoard();
-        [DllImport("6MockPlayer.dll")]
+        [DllImport("6MockPlayer.dll", CallingConvention = CallingConvention.Cdecl)]
         extern public static void setBlocks(int[] x, int[] y, int cnt);
-        [DllImport("6MockPlayer.dll")]
+        [DllImport("6MockPlayer.dll", CallingConvention = CallingConvention.Cdecl)]
         extern public static void updateStones(int[] x, int[] y, int cnt);
-        [DllImport("6MockPlayer.dll")]
+        [DllImport("6MockPlayer.dll", CallingConvention = CallingConvention.Cdecl)]
         extern public static void playerTurn(int[] x, int[] y, int cnt);
     }
 }
