@@ -16,17 +16,22 @@ namespace _6Mock
         private int 돌size = 24;
         private int 눈size = 27;
         private int 화점size = 11;
+        private int 막점size = 6;
         private Pen pen;
-        private Brush wBrush, bBrush;
+        private Brush wBrush, bBrush, rBrush;
         private int turn_cnt = 1;
         private Bitmap BlackStone = new Bitmap("Black.png");
         private Bitmap WhiteStone = new Bitmap("White.png");
+        private Bitmap TrapStone = new Bitmap("Trap.png");
 
         private Bitmap BlackStonePanel;
         private Bitmap WhiteStonePanel;
 
         private bool turn = false;// false : 흑돌 , true : 백돌
 
+        //        private int[,] latestWhite = new int[2, 2];
+        //       private int[,] latestBlack = new int[2, 2];
+        private int[,] latest = new int[2,2];
 
 
         enum STONE { none, Black, White, Block };
@@ -48,9 +53,20 @@ namespace _6Mock
             pen = new Pen(Color.Black);
             wBrush = new SolidBrush(Color.White);
             bBrush = new SolidBrush(Color.Black);
+            rBrush = new SolidBrush(Color.Red);
             panel1.Enabled = false;
             BlackStonePanel = new Bitmap(BlackStone, this.pictureBox1.Size);
             WhiteStonePanel = new Bitmap(WhiteStone, this.pictureBox1.Size);
+
+            for(int i =0; i<2; i++)
+            {
+                for(int j =0; j<2; j++)
+                {
+                    //        latestBlack[i, j] = -1;
+                    //        latestWhite[i, j] = -1;
+                    latest[i, j] = -1;
+                }
+            }
         }
 
         private void 랜덤생성()
@@ -62,7 +78,7 @@ namespace _6Mock
             if (선 == 1) MessageBox.Show("AI First");
             else MessageBox.Show("You First");
 
-            for (int i = 0; i <= 블록킹수; i++)
+            for (int i = 0; i < 블록킹수; i++)
             {
                 블록킹x[i] = rand.Next(19);
                 블록킹y[i] = rand.Next(19);
@@ -75,6 +91,15 @@ namespace _6Mock
                         break;
                     }
                 }
+            }
+
+            Graphics g = panel1.CreateGraphics();
+            for (int i = 0; i < 블록킹수; i++)
+            {
+                Rectangle r = new Rectangle(10 + 눈size * 블록킹x[i] - 돌size / 2,
+                     10 + 눈size * 블록킹y[i] - 돌size / 2, 돌size+5, 돌size+5);
+                g.DrawImage(TrapStone, r);
+                바둑판[블록킹x[i], 블록킹y[i]] = STONE.Block;
             }
         }
 
@@ -102,6 +127,12 @@ namespace _6Mock
             y = e.Y / 눈size;
             if (x < 0 || x >= 19 || y < 0 || y >= 19)
                 return;
+
+            for(int i=0; i<블록킹수; i++)
+            {
+                if (x == 블록킹x[i] && y == 블록킹y[i]) return;
+            }
+
             draw돌(x, y);
         }
 
@@ -160,6 +191,37 @@ namespace _6Mock
             }
             turn_cnt++;
             this.label2.Text = (2 - turn_cnt).ToString();
+
+            if(turn_cnt == 1)
+            {
+                if (turn)
+                {
+                    for (int i = 0; i < 2; i++)
+                    {
+                        if (latest[i, 0] == -1 || latest[i, 1] == -1) continue;
+                        r = new Rectangle(10 + 눈size * latest[i, 0] - 돌size / 2,
+                 10 + 눈size * latest[i, 1] - 돌size / 2, 돌size, 돌size);
+                        g.DrawImage(BlackStone, r);
+                    }
+
+                }
+                else
+                {
+                    for (int i = 0; i < 2; i++)
+                    {
+                        if (latest[i, 0] == -1 || latest[i, 1] == -1) continue;
+                        r = new Rectangle(10 + 눈size * latest[i, 0] - 돌size / 2,
+                 10 + 눈size * latest[i, 1] - 돌size / 2, 돌size, 돌size);
+                        g.DrawImage(WhiteStone, r);
+                    }
+                }
+            }
+            r = new Rectangle(10 + 눈size * x - 막점size / 2, 10 + 눈size * y - 막점size / 2, 막점size, 막점size);
+
+            g.FillEllipse(rBrush, r);
+            latest[turn_cnt-1, 0] = x;
+            latest[turn_cnt-1, 1] = y;
+
             if (turn_cnt == 2)
             {
                 turn = !turn;  // 돌 색깔을 토글
@@ -201,6 +263,8 @@ namespace _6Mock
                     turn_num++;
                 }
             }
+            
+
             check6mok(x, y);  // 육목이 만들어졌는지 체크하는 함수
         }
 
@@ -297,7 +361,7 @@ namespace _6Mock
             {
                 playerTurn(AIx, AIy, 1);
                 draw돌(AIx[0], AIy[0]);
-
+                
                 //playerTurn()
             }
             /*    else
