@@ -9,11 +9,12 @@ char GameBoard[BOARD_SIZE][BOARD_SIZE];
 Point PlayerMovement[2];
 Point OpponentMovement[2];
 
-int PlayerMoveCnt;
+int PlayerMoveCnt; // 0이면 새로운 게임 시작
 int OpponentMoveCnt;
 
 void initBoard() {
 	memset(GameBoard, Blank, sizeof(GameBoard));
+	PlayerMoveCnt = 0;
 }
 
 void domymove(int x[], int y[], int cnt) {
@@ -41,7 +42,7 @@ void updateStones(int x[], int y[], int cnt) {
 
 void playerTurn(int x[], int y[], int cnt) {
 	myturn(cnt);
-	for (int i = 0; i < PlayerMoveCnt; i++) {
+	for (int i = 0; i < cnt; i++) {
 		x[i] = PlayerMovement[i].x;
 		y[i] = PlayerMovement[i].y;
 	}

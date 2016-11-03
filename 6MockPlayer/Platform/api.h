@@ -23,7 +23,12 @@ bool isblock(int x, int y);
 int showboard(int x, int y);
 
 
-/* custom platform 용으로 사용될 API */
+/* 
+*  custom platform 용으로 사용될 API 
+*  새 게임 시작시 initBoard, setBlocks 순으로 호출해주어야 함
+*  AI 차례가 되면 playerTurn 함수 호출
+*  상대방 차례가 끝나면 playerTurn 함수 호출 전에 updateStones로 상대방의 마지막 수 업데이트
+*/
 extern "C" __declspec(dllexport) void initBoard();
 extern "C" __declspec(dllexport) void setBlocks(int x[], int y[], int cnt);
 extern "C" __declspec(dllexport) void updateStones(int x[], int y[], int cnt);
