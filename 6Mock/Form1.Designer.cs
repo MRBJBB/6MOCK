@@ -36,6 +36,7 @@
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.label1 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
+            this.VSAI = new System.Windows.Forms.CheckBox();
             this.menuStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.SuspendLayout();
@@ -71,14 +72,14 @@
             // 새게임NToolStripMenuItem
             // 
             this.새게임NToolStripMenuItem.Name = "새게임NToolStripMenuItem";
-            this.새게임NToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.새게임NToolStripMenuItem.Size = new System.Drawing.Size(131, 22);
             this.새게임NToolStripMenuItem.Text = "새 게임(&N)";
             this.새게임NToolStripMenuItem.Click += new System.EventHandler(this.새게임NToolStripMenuItem_Click);
             // 
             // 종료XToolStripMenuItem
             // 
             this.종료XToolStripMenuItem.Name = "종료XToolStripMenuItem";
-            this.종료XToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.종료XToolStripMenuItem.Size = new System.Drawing.Size(131, 22);
             this.종료XToolStripMenuItem.Text = "종료(&X)";
             this.종료XToolStripMenuItem.Click += new System.EventHandler(this.종료XToolStripMenuItem_Click);
             // 
@@ -93,7 +94,7 @@
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Font = new System.Drawing.Font("굴림", 18F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(129)));
+            this.label1.Font = new System.Drawing.Font("Gulim", 18F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(129)));
             this.label1.Location = new System.Drawing.Point(535, 32);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(59, 24);
@@ -103,17 +104,28 @@
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Font = new System.Drawing.Font("굴림", 36F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(129)));
+            this.label2.Font = new System.Drawing.Font("Gulim", 36F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(129)));
             this.label2.Location = new System.Drawing.Point(602, 63);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(0, 48);
             this.label2.TabIndex = 3;
+            // 
+            // VSAI
+            // 
+            this.VSAI.AutoSize = true;
+            this.VSAI.Location = new System.Drawing.Point(536, 520);
+            this.VSAI.Name = "VSAI";
+            this.VSAI.Size = new System.Drawing.Size(67, 16);
+            this.VSAI.TabIndex = 4;
+            this.VSAI.Text = "AI vs AI";
+            this.VSAI.UseVisualStyleBackColor = true;
             // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(684, 562);
+            this.Controls.Add(this.VSAI);
             this.Controls.Add(this.label2);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.pictureBox1);
@@ -141,6 +153,7 @@
         private System.Windows.Forms.PictureBox pictureBox1;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Label label2;
+        private System.Windows.Forms.CheckBox VSAI;
     }
 }
 
