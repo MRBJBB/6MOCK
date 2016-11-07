@@ -46,6 +46,7 @@ namespace _6Mock
         private int[] HumanX = new int[2];
         private int[] HumanY = new int[2];
         private int turn_num;
+        private int gameEnable = 0;
 
         public Form1()
         {
@@ -148,6 +149,7 @@ namespace _6Mock
 
         private void draw돌(int x, int y)
         {
+            if (gameEnable == 0) return;
             Graphics g = panel1.CreateGraphics();
 
             // 이미 어떤 돌이 놓여져 있으면 return
@@ -222,7 +224,7 @@ namespace _6Mock
             latest[turn_cnt-1, 0] = x;
             latest[turn_cnt-1, 1] = y;
 
-            if (turn_cnt == 2)
+            if (turn_cnt == 2 && !VSAI.Checked)
             {
                 turn = !turn;  // 돌 색깔을 토글
                 if (!turn) this.pictureBox1.Image = BlackStonePanel;
@@ -237,11 +239,15 @@ namespace _6Mock
                         turn_num++;
                         playerTurn(AIx, AIy, 2);
                         draw돌(AIx[0], AIy[0]);
+                        check6mok(x, y);  // 육목이 만들어졌는지 체크하는 함수
+                        if (gameEnable == 0) return;
                         draw돌(AIx[1], AIy[1]);
+                        check6mok(x, y);  // 육목이 만들어졌는지 체크하는 함수
                     }
                     else
                     {
                         turn_num++;
+                        check6mok(x, y);  // 육목이 만들어졌는지 체크하는 함수
                     }
 
                 }
@@ -261,11 +267,44 @@ namespace _6Mock
                 else if (turn_num == 1 && 선 == 1)
                 {
                     turn_num++;
+                    check6mok(x, y);  // 육목이 만들어졌는지 체크하는 함수
                 }
+            }
+            else if(turn_cnt == 2 && VSAI.Checked)
+            {
+                turn = !turn;  // 돌 색깔을 토글
+                if (!turn) this.pictureBox1.Image = BlackStonePanel;
+                else this.pictureBox1.Image = WhiteStonePanel;
+                turn_cnt = 0;
+
+                if ((선 == 1 && turn_num % 2 == 0) || (선 == 0 && turn_num % 2 == 1))
+                {
+                    updateStones(HumanX, HumanY, 2);
+                    turn_num++;
+                    playerTurn(AIx, AIy, 2);
+                    draw돌(AIx[0], AIy[0]);
+                    check6mok(x, y);
+                    draw돌(AIx[1], AIy[1]);
+                    check6mok(x, y);
+                }
+                else
+                {
+                    updateStones(AIx, AIy, 2);
+                    turn_num++;
+                    playerTurn(HumanX, HumanY, 2);
+                    draw돌(HumanX[0], HumanY[0]);
+                    check6mok(x, y);
+                    if (gameEnable == 0) return;
+                    draw돌(HumanX[1], HumanY[1]);
+                    check6mok(x, y);
+                }
+            }
+            else
+            {
+                check6mok(x, y);  // 육목이 만들어졌는지 체크하는 함수
             }
             
 
-            check6mok(x, y);  // 육목이 만들어졌는지 체크하는 함수
         }
 
         private void check6mok(int x, int y)
@@ -274,21 +313,25 @@ namespace _6Mock
             {
                 MessageBox.Show(바둑판[x, y] + " wins");
                 this.panel1.Enabled = false;
+                gameEnable = 0;
             }
             if (checkUD(x, y) == 6)
             {
                 MessageBox.Show(바둑판[x, y] + " wins");
                 this.panel1.Enabled = false;
+                gameEnable = 0;
             }
             if (checkSLASH(x, y) == 6)
             {
                 MessageBox.Show(바둑판[x, y] + " wins");
-                this.panel1.Enabled = false;
+                this.VSAI.Checked = false;
+                gameEnable = 0;
             }
             if (checkBACKSLASH(x, y) == 6)
             {
                 MessageBox.Show(바둑판[x, y] + " wins");
                 this.panel1.Enabled = false;
+                gameEnable = 0;
             }
         }
 
@@ -353,7 +396,7 @@ namespace _6Mock
             Refresh();
             draw바둑판();
             this.label2.Text = (2 - turn_cnt).ToString();
-
+            gameEnable = 1;
             initBoard();
             랜덤생성();
             setBlocks(블록킹x, 블록킹y, 블록킹수);
@@ -363,6 +406,11 @@ namespace _6Mock
                 draw돌(AIx[0], AIy[0]);
                 
                 //playerTurn()
+            }
+            else if (VSAI.Checked)
+            {
+                playerTurn(AIx, AIy, 1);
+                draw돌(AIx[0], AIy[0]);
             }
             /*    else
                 {
