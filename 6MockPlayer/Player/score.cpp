@@ -26,13 +26,13 @@ void initPlayerBoard() {
 		for (int y = 0; y < BOARD_SIZE; y++) {
 			// 중심에 가까울수록 유리
 			int dist = maxNorm(x, y, BOARD_CENTER, BOARD_CENTER);
-			ScoreBoard[x][y] = INITIAL_SCORE_FACTOR * (1.0f - (float)dist / (float)BOARD_CENTER);
+			ScoreBoard[x][y] = (float)INITIAL_SCORE_FACTOR * (1.0f - (float)dist / (float)BOARD_SIZE);
 
 			// 블록에 가까울수록 불리
 			for (int i = 0; i < bcnt; i++) {
 				dist = maxNorm(x, y, bx[i], by[i]);
 				int penalty = max(BLOCK_PENALTY_DIST - dist, 0);
-				ScoreBoard[x][y] *= (BLOCK_PENALTY_FACTOR * (float)penalty);
+				ScoreBoard[x][y] *= (1.0f - (float)BLOCK_PENALTY_FACTOR * (float)penalty);
 			}
 		}
 	}
@@ -54,7 +54,7 @@ void copyGameBoard() {
 	memcpy(PlayerBoard, GameBoard, sizeof(PlayerBoard));
 }
 
-// 해당 위치에 돌을 놓았을 때의 점수
+// 해당 위치에 돌을 놓았을 때의 점수 (돌이 이미 보드에 놓여있어야 함)
 // TODO: 점수 계산시 7목 조심하기
 float score(int x[], int y[], int cnt, Stone stone) {
 	float res = 0.0f;
@@ -63,8 +63,8 @@ float score(int x[], int y[], int cnt, Stone stone) {
 	memset((void *)&lineInfo, 0, sizeof(lineInfo));
 
 	for (int i = 0; i < cnt; i++) {
-		assert(PlayerBoard[x[i]][y[i]] == Blank);
-		PlayerBoard[x[i]][y[i]] = stone;
+		assert(PlayerBoard[x[i]][y[i]] == stone);
+		//PlayerBoard[x[i]][y[i]] = stone;
 	}
 
 	for (int i = 0; i < cnt; i++) {
@@ -85,8 +85,8 @@ float score(int x[], int y[], int cnt, Stone stone) {
 		}
 	}
 
-	for (int i = 0; i < cnt; i++) 
-		PlayerBoard[x[i]][y[i]] = Blank;
+	//for (int i = 0; i < cnt; i++) 
+	//	PlayerBoard[x[i]][y[i]] = Blank;
 
 	return res;
 }
@@ -102,17 +102,17 @@ float getLineScore(LineInfo &info, Line line)
 	if (info.bound[line] != 0 && info.bound[line + 4] == 0) {
 		return (float)len * 
 			(0.1f + (float)info.sequence[line + 4] / 
-			(float)(3.0 * info.free[line + 4] * info.free[line + 4]));
+			(float)(10.0f * info.free[line + 4] * info.free[line + 4]));
 	}
 	if (info.bound[line] == 0 && info.bound[line + 4] != 0) {
 		return (float)len *
 			(0.1f + (float)info.sequence[line] /
-			(float)(3.0 * info.free[line] * info.free[line]));
+			(float)(10.0f * info.free[line] * info.free[line]));
 	}
 	if (info.bound[line] == 0 && info.bound[line + 4] == 0) {
 		return (float)len * (
-			0.3f + (float)info.sequence[line] / (float)(3.0 * info.free[line] * info.free[line])
-			+ (float)info.sequence[line + 4] / (float)(3.0 * info.free[line + 4] * info.free[line + 4])
+			0.5f + (float)info.sequence[line] / (float)(10.0f * info.free[line] * info.free[line])
+			+ (float)info.sequence[line + 4] / (float)(10.0f * info.free[line + 4] * info.free[line + 4])
 			);
 	}
 	return result;

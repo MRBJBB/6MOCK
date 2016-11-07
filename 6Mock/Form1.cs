@@ -73,7 +73,7 @@ namespace _6Mock
         {
             Random rand = new Random();
             선 = rand.Next(2);
-            블록킹수 = rand.Next(7); // 0~ 6;
+            블록킹수 = rand.Next(4) * 2; // 0~ 6, even;
 
             if (선 == 1) MessageBox.Show("AI First");
             else MessageBox.Show("You First");

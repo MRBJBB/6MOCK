@@ -7,20 +7,20 @@ using namespace std;
 #define MYSTONE 1
 #define OPPSTONE 2
 #define POSITIVE_INF 0X7FFFFFFF
-#define NEGATIVE_INF 0X80000001
+#define NEGATIVE_INF -0X7FFFFFFF
 
 typedef struct {
-	int y;
 	int x;
+	int y;
 }Point;
 
 
 typedef struct _MinmaxNode {
 	char isMaxnode;				// 1: Min node , 0: Max node
-	int val_alpha;
-	int val_beta;
-	list<void*> child;			// 자식노드		
-	_MinmaxNode* patent;		// 부모노드
-	Point selec_Point[2];
+	float alpha;
+	float beta;
+	//list<_MinmaxNode*> child;			// 자식노드		
+	_MinmaxNode* parent;		// 부모노드
+	Point point[2];
 
 }MinmaxNode;

@@ -1,23 +1,40 @@
 #include "minmax_tree.h"
+#include "../Player/score.h"
 
-void MinmaxTree::init_Tree(int depth, char(*board)[BOARD_SIZE])
+extern char PlayerBoard[BOARD_SIZE][BOARD_SIZE];
+char MarkerBoard[BOARD_SIZE][BOARD_SIZE];
+
+
+void MinmaxTree::init_Tree(int depth)
 {
 	ptr_root = new MinmaxNode;
 	tree_Depth = depth;
 
+	memset(MarkerBoard, 0, sizeof(MarkerBoard));
 
 	for (int i = 0; i < BOARD_SIZE; i++) {
 		for (int j = 0; j < BOARD_SIZE; j++) {
-			game_Board[i][j] = board[i][j];
+			if (PlayerBoard[i][j] == Player || PlayerBoard[i][j] == Opponent) {
+				for (int x = -3; x < 4; x++) {
+					for (int y = -3; y < 4; y++) {
+						if (isInbound(i + x, j + y))
+							MarkerBoard[i + x][j + y] = 1;
+					}
+				}
+			}
 		}
 	}
 }
 
+void updateMarkerBoard() {
+
+}
+
 void MinmaxTree::Create_Tree()
 {
-	ptr_root->val_alpha = POSITIVE_INF;
-	ptr_root->val_beta = NEGATIVE_INF;
-	Rec_Create(1, ptr_root);
+	ptr_root->alpha = NEGATIVE_INF;
+	ptr_root->beta = POSITIVE_INF;
+	Rec_Evaluate(1, ptr_root, 0);
 
 }
 
@@ -48,13 +65,13 @@ void MinmaxTree::Rec_Create(int depth, MinmaxNode* parent)
 
 			MinmaxNode* child = new MinmaxNode;
 
-			child->val_alpha = parent->val_alpha;
-			child->val_beta = parent->val_beta;
+			child->alpha = parent->alpha;
+			child->beta = parent->beta;
 
-			child->patent = parent;
-			parent->child.push_back(child);
-			child->selec_Point[0].y = i; child->selec_Point[0].x = j;
-			child->selec_Point[1].y = k; child->selec_Point[1].x = l;
+			child->parent = parent;
+			//parent->child.push_back(child);
+			child->point[0].y = i; child->point[0].x = j;
+			child->point[1].y = k; child->point[1].x = l;
 
 			if (depth != tree_Depth) {
 				Rec_Create(depth + 1, child);
@@ -65,26 +82,26 @@ void MinmaxTree::Rec_Create(int depth, MinmaxNode* parent)
 			}
 
 			if (depth % 2) {
-				if (parent->val_alpha < child->val_beta) {
-					parent->val_alpha = child->val_beta;
+				if (parent->alpha < child->beta) {
+					parent->alpha = child->beta;
 					
-					if (parent->val_alpha >= parent->val_beta) {
+					if (parent->alpha >= parent->beta) {
 						game_Board[k][l] = 0;
 						game_Board[i][j] = 0;
 						return;
 					}
 					if (depth == 1)
 					{
-						parent->selec_Point[0] = child->selec_Point[0];
-						parent->selec_Point[1] = child->selec_Point[1];
+						parent->point[0] = child->point[0];
+						parent->point[1] = child->point[1];
 					}
 				}
 			}
 			else {
-				if (parent->val_beta > child->val_alpha)
+				if (parent->beta > child->alpha)
 				{
-					parent->val_beta = child->val_alpha;
-					if (parent->val_alpha >= parent->val_beta) {
+					parent->beta = child->alpha;
+					if (parent->alpha >= parent->beta) {
 						game_Board[k][l] = 0;
 						game_Board[i][j] = 0;
 						return;
@@ -97,8 +114,98 @@ void MinmaxTree::Rec_Create(int depth, MinmaxNode* parent)
 		game_Board[i][j] = 0;
 	}
 
-	parent->child.clear();
+	//parent->child.clear();
 }
 
 
 
+
+void MinmaxTree::Rec_Evaluate(int depth, MinmaxNode* parent, float prev_score)
+{
+	Stone stone = depth % 2 ? Player : Opponent;
+
+	for (int i = 0; i < BOARD_SIZE; i++) for (int j = 0; j < BOARD_SIZE; j++) {
+		if (PlayerBoard[i][j] != Blank || MarkerBoard[i][j] == 0) continue;
+		PlayerBoard[i][j] = stone;
+
+		for (int k = i; k < BOARD_SIZE; k++) for (int l = j + 1; l < BOARD_SIZE; l++) {
+			if (PlayerBoard[k][l] != Blank || MarkerBoard[i][j] == 0) continue;
+			PlayerBoard[k][l] = stone;
+
+			MinmaxNode* child = new MinmaxNode;
+
+			child->alpha = parent->alpha;
+			child->beta = parent->beta;
+
+			child->parent = parent;
+			//parent->child.push_back(child);
+			child->point[0].x = i; child->point[0].y = j; 
+			child->point[1].x = k; child->point[1].y = l;
+
+			int x[2] = { i, k };
+			int y[2] = { j, l };
+			float s = score(x, y, 2, stone);
+			s *= depth % 2 ? 1.0f : -1.0f;
+			if (s >= 100.0f) { // wins
+
+			}
+			else if (s <= -100.0f) { // loses
+				s = s;
+			}
+
+			s += prev_score * 0.7f;
+
+			if (depth != tree_Depth) {
+				Rec_Evaluate(depth + 1, child, s);
+			}
+			else {
+				// game_Board를 parameter로 넘겨줘서 가중치 계산하는 함수 실행
+				// child->val_alpha = Calc_Weight(game_Board, .... ); 
+				child->beta = child->alpha = s;
+			}
+
+			if (depth % 2) {
+				// alpha := max (alpha, alphabeta(child))
+				if (parent->alpha < child->beta) {
+					parent->alpha = child->beta;
+
+					if (parent->alpha >= parent->beta) {
+						PlayerBoard[k][l] = Blank;
+						PlayerBoard[i][j] = Blank;
+						return;
+					}
+					if (depth == 1)
+					{
+						parent->point[0] = child->point[0];
+						parent->point[1] = child->point[1];
+					}
+				}
+			}
+			else {
+				// beta := min (beta, alphabeta(child))
+				if (parent->beta > child->alpha)
+				{
+					parent->beta = child->alpha;
+					if (parent->alpha >= parent->beta) {
+						PlayerBoard[k][l] = Blank;
+						PlayerBoard[i][j] = Blank;
+						return;
+					}
+				}
+			}
+			delete child;
+			PlayerBoard[k][l] = Blank;
+		}
+		PlayerBoard[i][j] = Blank;
+	}
+
+	//parent->child.clear();
+}
+
+
+void MinmaxTree::get_solution(int x[], int y[], int cnt) {
+	for (int i = 0; i < cnt; i++) {
+		x[i] = ptr_root->point[i].x;
+		y[i] = ptr_root->point[i].y;
+	}
+}
