@@ -1,6 +1,7 @@
 #include <cstdlib>
 #include <time.h>
 #include <algorithm>
+#include <thread>
 
 #include "../Minmax/minmax_tree.h"
 #include "../Platform/api.h"
@@ -10,6 +11,19 @@ using namespace std;
 
 extern int PlayerMoveCnt;
 extern float ScoreBoard[BOARD_SIZE][BOARD_SIZE];
+
+/* MS Time Check*/
+bool timeout = false;
+
+void timeCheck(int val)
+{
+	_sleep(val);
+	timeout = true;
+}
+
+//thread timer(&timeCheck, 6500);
+// timer.join() ÇÏ¸é µÊ.
+
 
 void myturn(int cnt) {
 	int x[2], y[2];
