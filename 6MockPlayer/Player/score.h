@@ -34,10 +34,10 @@ void initPlayerBoard();
 int getBlocks(int bx[], int by[]);
 void copyGameBoard();
 
-float score(int x[], int y[], int cnt, Stone stone);
+float score(char (*Board)[BOARD_SIZE][BOARD_SIZE], int x[], int y[], int cnt, Stone stone);
 float getLineScore(LineInfo &info, Line line);
-void getLineInfo(int x, int y, Stone stone, Line line, LineInfo& lineInfo);
-void getDirInfo(int x, int y, Stone stone, Direction dir, LineInfo& lineInfo);
+void getLineInfo(char(*Board)[BOARD_SIZE][BOARD_SIZE], int x, int y, Stone stone, Line line, LineInfo& lineInfo);
+void getDirInfo(char(*Board)[BOARD_SIZE][BOARD_SIZE], int x, int y, Stone stone, Direction dir, LineInfo& lineInfo);
 Connection getConnectionState(int x1, int y1, int x2, int y2);
 
 inline bool isInbound(int x, int y);
