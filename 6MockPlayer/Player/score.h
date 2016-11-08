@@ -3,7 +3,7 @@
 #define MAX_SCORE 10000.0f
 #define INITIAL_SCORE_FACTOR 0.1f
 #define BLOCK_PENALTY_FACTOR 0.3f
-#define BLOCK_PENALTY_DIST 3
+#define BLOCK_PENALTY_DIST 4
 
 enum Line {
 	Vertical = 0, // N
