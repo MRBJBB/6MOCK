@@ -1,5 +1,6 @@
 #pragma once
-#include <list>
+#include <vector>
+#include <algorithm>
 #include "../Platform/api.h"
 
 using namespace std;
@@ -22,5 +23,5 @@ typedef struct _MinmaxNode {
 	//list<_MinmaxNode*> child;			// 자식노드		
 	_MinmaxNode* parent;		// 부모노드
 	Point point[2];
-
+	
 }MinmaxNode;
