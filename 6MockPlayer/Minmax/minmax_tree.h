@@ -1,11 +1,12 @@
 #pragma once
+#include <vector>
 #include "minmax_node.h"
 #include "../Platform/api.h"
 
 class MinmaxTree {
 
 private:
-	MinmaxNode* ptr_root;
+	MinmaxNode* ptr_root[NUMOFTHREAD];
 	int tree_Depth;
 public:
 

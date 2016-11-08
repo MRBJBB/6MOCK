@@ -17,7 +17,26 @@ typedef struct {
 }Point;
 
 
-typedef struct _MinmaxNode {
+typedef struct _Candidate{
+	int score;
+	int x;
+	int y;
+	bool operator<(_Candidate other) const
+	{
+		return score > other.score;
+	}
+}Candidate;
+
+typedef struct _Solution {
+	float score;
+	Point points[2];
+	bool operator<(_Solution other) const
+	{
+		return score > other.score;
+	}
+}Solution;
+
+typedef struct _MinmaxNode{
 	char isMaxnode;				// 1: Min node , 0: Max node
 	float alpha;
 	float beta;

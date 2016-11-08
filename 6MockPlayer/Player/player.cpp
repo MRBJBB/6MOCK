@@ -12,19 +12,6 @@ using namespace std;
 extern int PlayerMoveCnt;
 extern float ScoreBoard[BOARD_SIZE][BOARD_SIZE];
 
-/* MS Time Check*/
-bool timeout = false;
-
-void timeCheck(int val)
-{
-	_sleep(val);
-	timeout = true;
-}
-
-//thread timer(&timeCheck, 6500);
-// timer.join() ÇÏ¸é µÊ.
-
-
 void myturn(int cnt) {
 	int x[2], y[2];
 	
@@ -52,6 +39,7 @@ void myturn(int cnt) {
 		MinmaxTree tree;
 		tree.init_Tree(2);
 		tree.Create_Tree();
+		
 		tree.get_solution(x, y, cnt);
 	}
 	domymove(x, y, cnt);
