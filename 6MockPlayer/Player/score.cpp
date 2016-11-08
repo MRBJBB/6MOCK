@@ -96,24 +96,20 @@ float getLineScore(LineInfo &info, Line line)
 	int len = info.len[line];
 	float result = 0;
 	if (len >= 6) // connect 6!
-		return 100.0;
+		return 100.0f;
 	if (info.bound[line] != 0 && info.bound[line + 4] != 0)
 		return (float)len * 0.01f;
 	if (info.bound[line] != 0 && info.bound[line + 4] == 0) {
-		return (float)len * 
-			(0.1f + (float)info.sequence[line + 4] / 
-			(float)(10.0f * info.free[line + 4] * info.free[line + 4]));
+		return (float)(len * len) * 
+			(0.1f + 0.02f * (float)info.free[line + 4]);
 	}
 	if (info.bound[line] == 0 && info.bound[line + 4] != 0) {
-		return (float)len *
-			(0.1f + (float)info.sequence[line] /
-			(float)(10.0f * info.free[line] * info.free[line]));
+		return (float)(len * len) *
+			(0.1f + 0.02f * (float)info.free[line]);
 	}
 	if (info.bound[line] == 0 && info.bound[line + 4] == 0) {
-		return (float)len * (
-			0.5f + (float)info.sequence[line] / (float)(10.0f * info.free[line] * info.free[line])
-			+ (float)info.sequence[line + 4] / (float)(10.0f * info.free[line + 4] * info.free[line + 4])
-			);
+		return (float)(len * len) * 
+			(0.5f + 0.04f * (float)info.free[line] + 0.04f * (float)info.free[line + 4]);
 	}
 	return result;
 }
@@ -145,15 +141,16 @@ void getDirInfo(int x, int y, Stone stone, Direction dir, LineInfo& lineInfo) {
 		}
 	} while (true);
 
-	while (isInbound(x, y) && PlayerBoard[x][y] == Blank && lineInfo.free[dir] < 5) {
+	while (isInbound(x, y) && PlayerBoard[x][y] == Blank && lineInfo.free[dir] < 3) {
 		x += dx, y += dy;
 		lineInfo.free[dir]++;
 	}
-
+	/*
 	while (isInbound(x, y) && PlayerBoard[x][y] == stone) {
 		x += dx, y += dy;
 		lineInfo.sequence[dir]++;
 	}
+	*/
 }
 
 Connection getConnectionState(int x1, int y1, int x2, int y2) {

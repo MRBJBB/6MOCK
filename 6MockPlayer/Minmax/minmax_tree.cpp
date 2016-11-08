@@ -147,10 +147,19 @@ void MinmaxTree::Rec_Evaluate(int depth, MinmaxNode* parent, float prev_score)
 			float s = score(x, y, 2, stone);
 			s *= depth % 2 ? 1.0f : -1.0f;
 			if (s >= 100.0f) { // wins
-
+				if (depth == 1) {
+					parent->point[0] = child->point[0];
+					parent->point[1] = child->point[1];
+					return;
+				}
 			}
 			else if (s <= -100.0f) { // loses
-				s = s;
+				if (depth == 2) {
+					parent->beta = POSITIVE_INF;
+					parent->point[0] = child->point[0];
+					parent->point[1] = child->point[1];
+					return;
+				}
 			}
 
 			s += prev_score * 0.7f;
