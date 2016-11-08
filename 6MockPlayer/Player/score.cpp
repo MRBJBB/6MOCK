@@ -141,21 +141,12 @@ void getDirInfo(char(*Board)[BOARD_SIZE][BOARD_SIZE], int x, int y, Stone stone,
 		}
 	} while (true);
 
-<<<<<<< HEAD
-	while (isInbound(x, y) && (*Board)[x][y] == Blank && lineInfo.free[dir] < 5) {
-		x += dx, y += dy;
-		lineInfo.free[dir]++;
-	}
-
-	while (isInbound(x, y) && (*Board)[x][y] == stone) {
-=======
 	while (isInbound(x, y) && PlayerBoard[x][y] == Blank && lineInfo.free[dir] < 3) {
 		x += dx, y += dy;
 		lineInfo.free[dir]++;
 	}
 	/*
 	while (isInbound(x, y) && PlayerBoard[x][y] == stone) {
->>>>>>> 45ffd1a1a1c69bb11483f14539a733af9061382d
 		x += dx, y += dy;
 		lineInfo.sequence[dir]++;
 	}
