@@ -56,22 +56,22 @@ void copyGameBoard() {
 
 // 해당 위치에 돌을 놓았을 때의 점수 (돌이 이미 보드에 놓여있어야 함)
 // TODO: 점수 계산시 7목 조심하기
-float score(int x[], int y[], int cnt, Stone stone) {
+float score(char(*Board)[BOARD_SIZE][BOARD_SIZE], int x[], int y[], int cnt, Stone stone) {
 	float res = 0.0f;
 	LineInfo lineInfo[2];
 	float lineScore[2][4];
 	memset((void *)&lineInfo, 0, sizeof(lineInfo));
 
 	for (int i = 0; i < cnt; i++) {
-		assert(PlayerBoard[x[i]][y[i]] == stone);
+		assert((*Board)[x[i]][y[i]] == stone);
 		//PlayerBoard[x[i]][y[i]] = stone;
 	}
 
 	for (int i = 0; i < cnt; i++) {
-		getLineInfo(x[i], y[i], stone, Vertical, lineInfo[i]);
-		getLineInfo(x[i], y[i], stone, Diag45, lineInfo[i]);
-		getLineInfo(x[i], y[i], stone, Horizontal, lineInfo[i]);
-		getLineInfo(x[i], y[i], stone, Diag135, lineInfo[i]);
+		getLineInfo(Board, x[i], y[i], stone, Vertical, lineInfo[i]);
+		getLineInfo(Board, x[i], y[i], stone, Diag45, lineInfo[i]);
+		getLineInfo(Board, x[i], y[i], stone, Horizontal, lineInfo[i]);
+		getLineInfo(Board, x[i], y[i], stone, Diag135, lineInfo[i]);
 		lineScore[i][Vertical] = getLineScore(lineInfo[i], Vertical);
 		lineScore[i][Diag45] = getLineScore(lineInfo[i], Diag45);
 		lineScore[i][Horizontal] = getLineScore(lineInfo[i], Horizontal);
@@ -115,13 +115,13 @@ float getLineScore(LineInfo &info, Line line)
 }
 
 
-void getLineInfo(int x, int y, Stone stone, Line line, LineInfo& lineInfo) {
+void getLineInfo(char(*Board)[BOARD_SIZE][BOARD_SIZE], int x, int y, Stone stone, Line line, LineInfo& lineInfo) {
 	lineInfo.len[line] = 1;
-	getDirInfo(x, y, stone, (Direction)line, lineInfo);
-	getDirInfo(x, y, stone, (Direction)(line + 4), lineInfo);
+	getDirInfo(Board,x, y, stone, (Direction)line, lineInfo);
+	getDirInfo(Board, x, y, stone, (Direction)(line + 4), lineInfo);
 }
 
-void getDirInfo(int x, int y, Stone stone, Direction dir, LineInfo& lineInfo) {
+void getDirInfo(char(*Board)[BOARD_SIZE][BOARD_SIZE], int x, int y, Stone stone, Direction dir, LineInfo& lineInfo) {
 	int dx = dirDeltaX[dir], dy = dirDeltaY[dir];
 	do { // Blank일때만 탈출
 		x += dx, y += dy;
@@ -129,10 +129,10 @@ void getDirInfo(int x, int y, Stone stone, Direction dir, LineInfo& lineInfo) {
 			lineInfo.bound[dir] = 1;
 			return;
 		}
-		if (PlayerBoard[x][y] == stone) {
+		if ((*Board)[x][y] == stone) {
 			lineInfo.len[dir % 4]++;
 		}
-		else if (PlayerBoard[x][y] != Blank) { // 다른 Stone 또는 Block
+		else if ((*Board)[x][y] != Blank) { // 다른 Stone 또는 Block
 			lineInfo.bound[dir] = 1;
 			return;
 		}
@@ -141,12 +141,21 @@ void getDirInfo(int x, int y, Stone stone, Direction dir, LineInfo& lineInfo) {
 		}
 	} while (true);
 
+<<<<<<< HEAD
+	while (isInbound(x, y) && (*Board)[x][y] == Blank && lineInfo.free[dir] < 5) {
+		x += dx, y += dy;
+		lineInfo.free[dir]++;
+	}
+
+	while (isInbound(x, y) && (*Board)[x][y] == stone) {
+=======
 	while (isInbound(x, y) && PlayerBoard[x][y] == Blank && lineInfo.free[dir] < 3) {
 		x += dx, y += dy;
 		lineInfo.free[dir]++;
 	}
 	/*
 	while (isInbound(x, y) && PlayerBoard[x][y] == stone) {
+>>>>>>> 45ffd1a1a1c69bb11483f14539a733af9061382d
 		x += dx, y += dy;
 		lineInfo.sequence[dir]++;
 	}

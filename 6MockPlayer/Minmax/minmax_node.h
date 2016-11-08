@@ -9,6 +9,7 @@ using namespace std;
 #define OPPSTONE 2
 #define POSITIVE_INF 0X7FFFFFFF
 #define NEGATIVE_INF -0X7FFFFFFF
+#define NUMOFTHREAD 4
 
 typedef struct {
 	int x;
@@ -20,7 +21,6 @@ typedef struct _MinmaxNode {
 	char isMaxnode;				// 1: Min node , 0: Max node
 	float alpha;
 	float beta;
-	//list<_MinmaxNode*> child;			// 자식노드		
 	_MinmaxNode* parent;		// 부모노드
 	Point point[2];
 	
