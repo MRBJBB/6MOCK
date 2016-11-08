@@ -1,4 +1,5 @@
 #include "..\Platform\api.h"
+#include "../Minmax/minmax_node.h"
 
 #define MAX_SCORE 10000.0f
 #define INITIAL_SCORE_FACTOR 0.1f

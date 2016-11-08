@@ -8,6 +8,8 @@
 
 extern int OpponentMoveCnt;
 extern Point OpponentMovement[2];
+extern int dirDeltaX[8];
+extern int dirDeltaY[8];
 
 extern char PlayerBoard[BOARD_SIZE][BOARD_SIZE];
 char MarkerBoard[BOARD_SIZE][BOARD_SIZE];
@@ -72,6 +74,11 @@ void MinmaxTree::init_Tree(int depth)
 	sort(candidates.begin(), candidates.end());
 }
 
+// PlayerBoard only
+inline bool isStone(int x, int y, Stone stone) {
+	return isInbound(x, y) && PlayerBoard[x][y] == stone;
+}
+
 void MinmaxTree::Create_Tree()
 {
 	for (int k = 0; k < NUMOFTHREAD; k++) {
@@ -82,10 +89,11 @@ void MinmaxTree::Create_Tree()
 	Stone stone = Player;
 	
 	//상대방이 다음 턴에 육목을 놓을 수 있는지 체크
+	//if (checkThreat())
+		//cout << "threat!" << endl;
 
 	timeout = false;
 	HANDLE timer = CreateThread(NULL, 0, &timeCheck, 0, 0, 0);
-	//thread timer(&timeCheck, 6500);
 	thread trd1(&Devide_Thread, 0, ptr_root[0]);
 	thread trd2(&Devide_Thread, 1, ptr_root[1]);
 	thread trd3(&Devide_Thread, 2, ptr_root[2]);
@@ -96,9 +104,7 @@ void MinmaxTree::Create_Tree()
 	trd2.join();
 	trd3.join();
 	trd4.join();
-	CloseHandle(timer);
-	//timer.join();
-	
+	CloseHandle(timer);	
 }
 
 void Devide_Thread(int nThread, MinmaxNode* parent) {

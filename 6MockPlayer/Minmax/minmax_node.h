@@ -36,6 +36,12 @@ typedef struct _Solution {
 	}
 }Solution;
 
+typedef struct {
+	int len;
+	Point start;
+	Point end;
+}Segment;
+
 typedef struct _MinmaxNode{
 	char isMaxnode;				// 1: Min node , 0: Max node
 	float alpha;

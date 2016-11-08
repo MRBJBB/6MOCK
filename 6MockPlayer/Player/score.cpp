@@ -1,7 +1,8 @@
 #include <assert.h>
 #include <initializer_list>
-
+#include <vector>
 #include "score.h"
+
 
 using namespace std;
 
@@ -14,6 +15,7 @@ char PlayerBoard[BOARD_SIZE][BOARD_SIZE];
 
 int dirDeltaX[8] = {-1, -1, 0, 1, 1,  1,  0, -1}; // 왼쪽 최상단이 (0, 0)
 int dirDeltaY[8] = { 0,  1, 1, 1, 0, -1, -1, -1};
+int lineCnt[4] = { BOARD_SIZE, 2 * BOARD_SIZE - 1, BOARD_SIZE, 2 * BOARD_SIZE - 1 };
 
 void initPlayerBoard() {
 	memcpy(PlayerBoard, GameBoard, sizeof(PlayerBoard));
@@ -140,11 +142,12 @@ void getDirInfo(char(*Board)[BOARD_SIZE][BOARD_SIZE], int x, int y, Stone stone,
 			break;
 		}
 	} while (true);
-
+	/*
 	while (isInbound(x, y) && PlayerBoard[x][y] == Blank && lineInfo.free[dir] < 3) {
 		x += dx, y += dy;
 		lineInfo.free[dir]++;
 	}
+	*/
 	/*
 	while (isInbound(x, y) && PlayerBoard[x][y] == stone) {
 		x += dx, y += dy;
@@ -203,4 +206,110 @@ inline int maxNorm(int x1, int y1, int x2, int y2) {
 }
 inline Stone getOpponent(Stone s) {
 	return (s == Player) ? Opponent : Player;
+}
+inline bool isStone(char(*Board)[BOARD_SIZE][BOARD_SIZE], int x, int y, Stone stone) {
+	return isInbound(x, y) && PlayerBoard[x][y] == stone;
+}
+bool checkThreat(char(*Board)[BOARD_SIZE][BOARD_SIZE], int x[], int y[], Stone stone) {
+	vector<Segment> segments = {};
+	Line line;
+	int cnt = 0;
+	for (int l = 0; l < 4; l++) {
+		line = (Line)l;
+		int dx, dy;
+		// 각 방향별로
+		for (int k = 0; k = lineCnt[l]; k++) {
+			int x = 0, y = 0;
+			switch (line) {
+			case Vertical:
+				x = 0, y = k;
+				dx = 1, dy = 0;
+				break;
+			case Diag45:
+				x = max(0, k - BOARD_SIZE), y = min(BOARD_SIZE, k);
+				dx = 1, dy = -1;
+				break;
+			case Horizontal:
+				x = k, y = 0;
+				dx = 0, dy = 1;
+				break;
+			case Diag135:
+				x = max(BOARD_SIZE - k, 0), y = max(0, k - BOARD_SIZE);
+				dx = 1, dy = 1;
+				break;
+			}
+			
+			// segment 추출
+			int len = 0;
+			segments.clear();
+			while (isInbound(x, y)) {
+				if (isStone(Board, x, y, stone)) {
+					len++;
+				}
+				else if (len > 0) {
+					Segment seg = { len,{ x - len*dx, y - len*dy },{ x - dx, y - dy } };
+					segments.push_back(seg);
+					len = 0;
+				}
+				x += dx, y += dy;
+			}
+			if (len > 0) {
+				Segment seg = { len,{ x - len*dx, y - len*dy },{ x - dx, y - dy } };
+				segments.push_back(seg);
+			}
+			
+			for (int i = 0; i < segments.size(); i++) {
+				Segment seg = segments.at(i);
+				// start 쪽에 하나
+				if (isStone(Board, seg.start.x - dx, seg.start.y - dy, Blank)) {
+					int total = seg.len + 1;
+					if (i > 0 && segments.at(i - 1).end.x == seg.start.x - 2 * dx &&
+						segments.at(i - 1).end.y == seg.start.y - 2 * dy)
+						total += segments.at(i - 1).len;
+					if (total == 6) return true;
+				}
+				// end 쪽에 하나
+				if (isStone(Board, seg.end.x + dx, seg.end.y + dy, Blank)) {
+					int total = seg.len + 1;
+					if (i < segments.size() - 1 &&
+						segments.at(i + 1).start.x == seg.end.x + 2 * dx &&
+						segments.at(i + 1).start.y == seg.end.y + 2 * dy)
+						total += segments.at(i + 1).len;
+					if (total == 6) return true;
+				}
+				// 양쪽에 하나씩
+				if (isStone(Board, seg.start.x - dx, seg.start.y - dy, Blank) &&
+					isStone(Board, seg.end.x + dx, seg.end.y + dy, Blank)) {
+					int total = seg.len + 2;
+					if (i > 0 && segments.at(i - 1).end.x == seg.start.x - 2 * dx &&
+						segments.at(i - 1).end.y == seg.start.y - 2 * dy)
+						total += segments.at(i - 1).len;
+					if (i < segments.size() - 1 &&
+						segments.at(i + 1).start.x == seg.end.x + 2 * dx &&
+						segments.at(i + 1).start.y == seg.end.y + 2 * dy)
+						total += segments.at(i + 1).len;
+					if (total == 6) return true;
+				}
+				// start 쪽에 두개
+				if (isStone(Board, seg.start.x - dx, seg.start.y - dy, Blank) &&
+					isStone(Board, seg.start.x - 2*dx, seg.start.y - 2*dy, Blank)) {
+					int total = seg.len + 2;
+					if (i > 0 && segments.at(i - 1).end.x == seg.start.x - 3 * dx &&
+						segments.at(i - 1).end.y == seg.start.y - 3 * dy)
+						total += segments.at(i - 1).len;
+					if (total == 6) return true;
+				}
+				if (isStone(Board, seg.end.x + dx, seg.end.y + dy, Blank) &&
+					isStone(Board, seg.end.x + 2*dx, seg.end.y + 2*dy, Blank)) {
+					int total = seg.len + 2;
+					if (i < segments.size() - 1 &&
+						segments.at(i + 1).start.x == seg.end.x + 3 * dx &&
+						segments.at(i + 1).start.y == seg.end.y + 3 * dy)
+						total += segments.at(i + 1).len;
+					if (total == 6) return true;
+				}
+			}
+		}
+	}
+	return false;
 }
